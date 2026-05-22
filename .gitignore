@@ -1,7 +1,8 @@
 .DS_Store
 /build/
 /archive/
-*.pdf
+/*.pdf
+!/media/*.pdf
 *.tar.gz
 *.zip
 *.curlopt

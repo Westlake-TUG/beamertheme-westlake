@@ -1,6 +1,5 @@
 .DS_Store
 /build/
-/archive/
 /*.pdf
 !/media/*.pdf
 *.tar.gz

@@ -241,7 +241,7 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %    \begin{macrocode}
 \def\presentationendpages{%
   \ifx\beamer@startpageofappendix\@empty
-    \the\beamer@endpageofdocument
+    \beamer@endpageofdocument
   \else
     \the\numexpr\beamer@startpageofappendix-1\relax
   \fi}

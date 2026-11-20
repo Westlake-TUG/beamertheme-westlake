@@ -221,17 +221,30 @@ The Current Maintainer of this work is **Mingyu Xia**.
     \tikz{%
       \draw [ultra thick, line cap = round, westlake!20]
         (0,0) --++ (2\linewidth/3,0);
-      \filldraw [ultra thick, line cap = round, westlake!60, path fading = west]
-        (0,0) --++
-        (\fpeval{\insertpagenumber/\insertdocumentendpage * 2/3}\linewidth,0);
+      \ifnum \insertpagenumber>\presentationendpages
+        \filldraw [ultra thick, line cap = round, westlake!60, path fading = west]
+          (0,0) --++ (2\linewidth/3,0);
+      \else
+        \filldraw [ultra thick, line cap = round, westlake!60, path fading = west]
+          (0,0) --++
+          (\fpeval{\insertpagenumber/\presentationendpages * 2/3}\linewidth,0);
+      \fi
     }
     \vfill
   \end{frame}
   \sectionfalse
 }
 %    \end{macrocode}
-% Configure the background.
+% The number of physical pages before |\appendix|: beamer's
+% |\insertpresentationendpage| without its brace group, so that it can enter
+% |\ifnum| and |\fpeval|.  Empty on the first pass, before the \texttt{.nav} is read.
 %    \begin{macrocode}
+\def\presentationendpages{%
+  \ifx\beamer@startpageofappendix\@empty
+    \the\beamer@endpageofdocument
+  \else
+    \the\numexpr\beamer@startpageofappendix-1\relax
+  \fi}
 \usebackgroundtemplate{%
   \tikz [remember picture, overlay] {%
     \ifnum \insertpagenumber=1
@@ -333,6 +346,10 @@ The Current Maintainer of this work is **Mingyu Xia**.
 % Configure the footer, remove navigation buttons, and set the color series.
 %    \begin{macrocode}
 \useoutertheme{infolines}
+\setbeamertemplate{page number in head/foot}{%
+  \usebeamercolor[fg]{page number in head/foot}%
+  \usebeamerfont*{page number in head/foot}%
+  \insertframenumber\,/\,\insertmainframenumber}
 \setbeamertemplate{navigation symbols}{}
 \setbeamercolor{title}{parent = author in head/foot}
 \setbeamercolor*{palette primary}
@@ -346,22 +363,28 @@ The Current Maintainer of this work is **Mingyu Xia**.
 %    \begin{macrocode}
 \addtobeamertemplate{headline}{}{%
   \tikz [remember picture, overlay]{%
-    \ifnum \inteval{2*\insertpagenumber}>\insertdocumentendpage
+    \ifnum \insertpagenumber>\presentationendpages
       \filldraw [westlake!60]
         (current page.north) --++ (0,-4ex) [rounded corners = 1ex] --++
-        (\fpeval
-          {\insertpagenumber/\insertdocumentendpage/2}\paperwidth,0)
-        [rounded corners = 0pt] --++ (4ex,4ex)
-       node [left = 2ex, midway, white, font = \bfseries \small]
-        {\inteval{100*\insertpagenumber/\insertdocumentendpage}\%} -- cycle;
+        (.5\paperwidth, 0) [rounded corners = 0pt] --++ (4ex,4ex)
+       node [left = 2ex, midway, white, font = \bfseries \small] {100\%} --
+       cycle;
     \else
-      \filldraw [westlake!60]
-        (current page.north) --++ (0,-4ex) [rounded corners = 1ex] --++
-        (\fpeval
-          {\insertpagenumber/\insertdocumentendpage/2}\paperwidth,0)
-        [rounded corners = 0pt] --++ (4ex,4ex)
-       node [right = 2ex, midway, westlake, font = \bfseries \small]
-        {\inteval{100*\insertpagenumber/\insertdocumentendpage}\%} -- cycle;
+      \ifnum \inteval{2*\insertpagenumber}>\presentationendpages
+        \filldraw [westlake!60]
+          (current page.north) --++ (0,-4ex) [rounded corners = 1ex] --++
+          (\fpeval{\insertpagenumber/\presentationendpages/2}\paperwidth,0)
+          [rounded corners = 0pt] --++ (4ex,4ex)
+         node [left = 2ex, midway, white, font = \bfseries \small]
+          {\inteval{100*\insertpagenumber/\presentationendpages}\%} -- cycle;
+      \else
+        \filldraw [westlake!60]
+          (current page.north) --++ (0,-4ex) [rounded corners = 1ex] --++
+          (\fpeval{\insertpagenumber/\presentationendpages/2}\paperwidth,0)
+          [rounded corners = 0pt] --++ (4ex,4ex)
+         node [right = 2ex, midway, westlake, font = \bfseries \small]
+          {\inteval{100*\insertpagenumber/\presentationendpages}\%} -- cycle;
+      \fi
     \fi
   }
 }
